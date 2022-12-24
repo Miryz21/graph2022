@@ -9,51 +9,45 @@ import com.mathsystem.domain.plugin.plugintype.GraphProperty;
 import java.util.*;
 
 public class EdgeAmbiguity {
-    HashMap<UUID, Boolean> visited = new HashMap<UUID, Boolean>();
-    public void DFS(Graph g, UUID id){
+    public void DFS(Graph g, UUID id, HashMap<UUID, Boolean> visited) {
         ArrayList<UUID> adjList = new ArrayList<UUID>();
         visited.put(id, true);
-        for (Edge edge : g.getEdges()){
-            if (edge.getFromV() == id && !visited.get(edge.getFromV())){
-                adjList.add(edge.getFromV());
-            }
-            if (edge.getToV() == id && !visited.get(edge.getToV())){
+        for (Edge edge : g.getEdges()) {
+
+            if (edge.getFromV().equals(id) && !(visited.containsKey(edge.getToV()))) {
                 adjList.add(edge.getToV());
             }
+            if (edge.getToV().equals(id) && !(visited.containsKey(edge.getFromV()))) {
+                adjList.add(edge.getFromV());
+            }
         }
-        for (UUID i : adjList){
-            DFS(g, i);
+        for (UUID i : adjList) {
+            DFS(g, i, visited);
         }
     }
 
-    public ArrayList<UUID> compFind(HashMap<UUID, Boolean> mapa){
-        ArrayList<UUID> res = new ArrayList<UUID>();
-        for (var i : mapa.keySet()){
-            if (mapa.get(i)){
-                res.add(i);
-            }
-        }
+    public ArrayList<UUID> compFind(HashMap<UUID, Boolean> visited) {
 
+        ArrayList<UUID> res = new ArrayList<UUID>(visited.keySet());
+        visited.clear();
         return res;
     }
 
-    public ArrayList<ArrayList<UUID>> graphComps(Graph g){
-        ArrayList<UUID> vertList = new ArrayList<UUID>();
+    public ArrayList<ArrayList<UUID>> graphComps(Graph g) {
         ArrayList<ArrayList<UUID>> res = new ArrayList<ArrayList<UUID>>();
 
-        for (var v : g.getVertices().keySet()){
-            vertList.add(v);
-        }
+        ArrayList<UUID> vertList = new ArrayList<UUID>(g.getVertices().keySet());
 
         HashMap<UUID, Boolean> visited = new HashMap<UUID, Boolean>();
 
-        while (vertList.size() > 0){
-            DFS(g, vertList.get(0));
+        for (UUID uuid : vertList) {
+            DFS(g, uuid, visited);
             res.add(compFind(visited));
-            vertList.remove(0);
-        }
 
-        return res;
+        }
+        var t = new HashSet<ArrayList<UUID>>(res);
+
+        return new ArrayList<ArrayList<UUID>>(t);
     }
 
     public ArrayList<ArrayList<UUID>> edgeCompFind(Graph g){

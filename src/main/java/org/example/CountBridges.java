@@ -6,67 +6,66 @@ import com.mathsystem.api.graph.model.Vertex;
 import com.mathsystem.domain.graph.repository.Color;
 import com.mathsystem.domain.graph.repository.GraphType;
 import com.mathsystem.domain.plugin.plugintype.GraphProperty;
+
 import java.util.*;
 
 public class CountBridges {
-    HashMap<UUID, Boolean> visited = new HashMap<UUID, Boolean>();
 
-    public void DFS(Graph g, UUID id){
+    public void DFS(Graph g, UUID id, HashMap<UUID, Boolean> visited) {
         ArrayList<UUID> adjList = new ArrayList<UUID>();
         visited.put(id, true);
-        for (Edge edge : g.getEdges()){
-            if (edge.getFromV() == id && !visited.get(edge.getFromV())){
-                adjList.add(edge.getFromV());
-            }
-            if (edge.getToV() == id && !visited.get(edge.getToV())){
+        for (Edge edge : g.getEdges()) {
+
+            if (edge.getFromV().equals(id) && !(visited.containsKey(edge.getToV()))) {
                 adjList.add(edge.getToV());
             }
+            if (edge.getToV().equals(id) && !(visited.containsKey(edge.getFromV()))) {
+                adjList.add(edge.getFromV());
+            }
         }
-        for (UUID i : adjList){
-            DFS(g, i);
+        for (UUID i : adjList) {
+            DFS(g, i, visited);
         }
     }
 
-    public ArrayList<UUID> compFind(HashMap<UUID, Boolean> mapa){
-        ArrayList<UUID> res = new ArrayList<UUID>();
-        for (var i : mapa.keySet()){
-            if (mapa.get(i)){
-                res.add(i);
-            }
-        }
+    public ArrayList<UUID> compFind(HashMap<UUID, Boolean> visited) {
 
+        ArrayList<UUID> res = new ArrayList<UUID>(visited.keySet());
+        visited.clear();
         return res;
     }
 
-    public ArrayList<ArrayList<UUID>> graphComps(Graph g){
-        ArrayList<UUID> vertList = new ArrayList<UUID>();
+    public ArrayList<ArrayList<UUID>> graphComps(Graph g) {
         ArrayList<ArrayList<UUID>> res = new ArrayList<ArrayList<UUID>>();
 
-        for (var v : g.getVertices().keySet()){
-            vertList.add(v);
-        }
+        ArrayList<UUID> vertList = new ArrayList<UUID>(g.getVertices().keySet());
 
         HashMap<UUID, Boolean> visited = new HashMap<UUID, Boolean>();
 
-        while (vertList.size() > 0){
-            DFS(g, vertList.get(0));
+        for (UUID uuid : vertList) {
+            DFS(g, uuid, visited);
             res.add(compFind(visited));
-            vertList.remove(0);
-        }
 
-        return res;
+        }
+        var t = new HashSet<ArrayList<UUID>>(res);
+
+        return new ArrayList<ArrayList<UUID>>(t);
     }
 
-    public Integer bridgeCounter(Graph g){
+    public Integer bridgeCounter(Graph g) {
+
         ArrayList<ArrayList<UUID>> res = new ArrayList<ArrayList<UUID>>();
         ArrayList<Edge> bridges = new ArrayList<Edge>();
         ArrayList<Edge> edgeList = new ArrayList<Edge>(g.getEdges());
         ArrayList<Edge> temp = new ArrayList<Edge>(edgeList);
 
-        for (var e : edgeList){
+        for (var e : edgeList) {
             temp.remove(e);
             Graph tempg = new Graph(g.getDirectType(), g.getVertices().size(), temp.size(), g.getVertices(), temp);
-            if (graphComps(tempg).size() > graphComps(g).size()){
+            int i_1 = graphComps(tempg).size();
+            int i_2 = graphComps(g).size();
+
+            if (i_1 > i_2) {
                 bridges.add(e);
                 res.addAll(graphComps(tempg));
             }

@@ -9,82 +9,86 @@ import com.mathsystem.domain.plugin.plugintype.GraphProperty;
 import java.util.*;
 
 public class VertexAmbiguity {
-    HashMap<UUID, Boolean> visited = new HashMap<UUID, Boolean>();
-    public void DFS(Graph g, UUID id){
+    public void DFS(Graph g, UUID id, HashMap<UUID, Boolean> visited) {
         ArrayList<UUID> adjList = new ArrayList<UUID>();
         visited.put(id, true);
-        for (Edge edge : g.getEdges()){
-            if (edge.getFromV() == id && !visited.get(edge.getFromV())){
-                adjList.add(edge.getFromV());
-            }
-            if (edge.getToV() == id && !visited.get(edge.getToV())){
+        for (Edge edge : g.getEdges()) {
+
+            if (edge.getFromV().equals(id) && !(visited.containsKey(edge.getToV()))) {
                 adjList.add(edge.getToV());
             }
+            if (edge.getToV().equals(id) && !(visited.containsKey(edge.getFromV()))) {
+                adjList.add(edge.getFromV());
+            }
         }
-        for (UUID i : adjList){
-            DFS(g, i);
+        for (UUID i : adjList) {
+            DFS(g, i, visited);
         }
     }
 
-    public ArrayList<UUID> compFind(HashMap<UUID, Boolean> mapa){
-        ArrayList<UUID> res = new ArrayList<UUID>();
-        for (var i : mapa.keySet()){
-            if (mapa.get(i)){
-                res.add(i);
-            }
-        }
+    public ArrayList<UUID> compFind(HashMap<UUID, Boolean> visited) {
 
+        ArrayList<UUID> res = new ArrayList<UUID>(visited.keySet());
+        visited.clear();
         return res;
     }
 
-    public ArrayList<ArrayList<UUID>> graphComps(Graph g){
-        ArrayList<UUID> vertList = new ArrayList<UUID>();
+    public ArrayList<ArrayList<UUID>> graphComps(Graph g) {
         ArrayList<ArrayList<UUID>> res = new ArrayList<ArrayList<UUID>>();
 
-        for (var v : g.getVertices().keySet()){
-            vertList.add(v);
-        }
+        ArrayList<UUID> vertList = new ArrayList<UUID>(g.getVertices().keySet());
 
         HashMap<UUID, Boolean> visited = new HashMap<UUID, Boolean>();
 
-        while (vertList.size() > 0){
-            DFS(g, vertList.get(0));
+        for (UUID uuid : vertList) {
+            DFS(g, uuid, visited);
             res.add(compFind(visited));
-            vertList.remove(0);
+
         }
+        for (var i : res){
+            Collections.sort(i);
+        }
+        var t = new HashSet<ArrayList<UUID>>(res);
 
-        return res;
+        return new ArrayList<ArrayList<UUID>>(t);
     }
-
-    public ArrayList<ArrayList<UUID>> blocksFind(Graph g){
+    public Integer blocksFind(Graph g){
         ArrayList<UUID> vertList = new ArrayList<UUID>();
         ArrayList<UUID> temp = new ArrayList<UUID>(vertList);
         ArrayList<UUID> cut = new ArrayList<UUID>();
         ArrayList<ArrayList<UUID>> res = new ArrayList<ArrayList<UUID>>();
 
-        for (var v : g.getVertices().keySet()){
-            vertList.add(v);
-        }
+        vertList.addAll(g.getVertices().keySet());
 
         for (var v : vertList){
-            temp = vertList;
-            temp.remove(v);
+
+
             var edgesList = new ArrayList<Edge>(g.getEdges());
+            var temp_e = new ArrayList<Edge>(g.getEdges());
             for (var e : edgesList){
-                if (e.getFromV() == v || e.getToV() == v){
-                    edgesList.remove(e);
+                if (e.getFromV().equals(v) || e.getToV().equals(v)){
+                    temp_e.remove(e);
                 }
             }
+            temp.remove(v);
             var tempVertex = new HashMap<UUID, Vertex>(g.getVertices());
             tempVertex.remove(v);
-            Graph tempg = new Graph(g.getDirectType(), temp.size(), edgesList.size(), tempVertex, edgesList);
-
+            Graph tempg = new Graph(g.getDirectType(), temp.size(), temp_e.size(), tempVertex, temp_e);
+            int i_1 = graphComps(tempg).size();
+            int i_2 = graphComps(g).size();
             if (graphComps(tempg).size() > graphComps(g).size()){
                 cut.add(v);
                 res.addAll(graphComps(tempg));
             }
+            if ((graphComps(tempg).size()==1 && graphComps(g).size()==1)){
+                res.addAll(graphComps(g));
+            }
         }
+        for (var i : res){
+            Collections.sort(i);
+        }
+        var t = new HashSet<ArrayList<UUID>>(res);
 
-        return res;
+        return (new ArrayList<ArrayList<UUID>>(t)).size();
     }
 }
