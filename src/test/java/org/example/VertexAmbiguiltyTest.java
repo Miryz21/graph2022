@@ -18,9 +18,9 @@ import static org.assertj.core.api.Assertions.assertThat;
         }
         @Test
         void count_bridges2() throws FileNotFoundException {
-            Graph testGraph = GraphFactory.loadGraphFromFile(new File("src/test/resources/16_graph4.txt"));
+            Graph testGraph = GraphFactory.loadGraphFromFile(new File("src/test/resources/16_graph1.txt"));
             VertexAmbiguity countVertex = new VertexAmbiguity();
-            assertThat(countVertex.blocksFind(testGraph)).isEqualTo(1);
+            assertThat(countVertex.blocksFind(testGraph)).isEqualTo(4);
         }
     }
 

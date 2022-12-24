@@ -45,6 +45,9 @@ public class EdgeAmbiguity {
             res.add(compFind(visited));
 
         }
+        for (var i : res){
+            Collections.sort(i);
+        }
         var t = new HashSet<ArrayList<UUID>>(res);
 
         return new ArrayList<ArrayList<UUID>>(t);

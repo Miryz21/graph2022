@@ -80,15 +80,13 @@ public class VertexAmbiguity {
                 cut.add(v);
                 res.addAll(graphComps(tempg));
             }
-            if ((graphComps(tempg).size()==1 && graphComps(g).size()==1)){
-                res.addAll(graphComps(g));
-            }
+
         }
         for (var i : res){
             Collections.sort(i);
         }
         var t = new HashSet<ArrayList<UUID>>(res);
 
-        return (new ArrayList<ArrayList<UUID>>(t)).size();
+        return (new ArrayList<ArrayList<UUID>>(t)).size()==0?1:(new ArrayList<ArrayList<UUID>>(t)).size();
     }
 }
