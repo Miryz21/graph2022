@@ -57,9 +57,10 @@ public class CountBridges {
         ArrayList<ArrayList<UUID>> res = new ArrayList<ArrayList<UUID>>();
         ArrayList<Edge> bridges = new ArrayList<Edge>();
         ArrayList<Edge> edgeList = new ArrayList<Edge>(g.getEdges());
-        ArrayList<Edge> temp = new ArrayList<Edge>(edgeList);
 
         for (var e : edgeList) {
+            ArrayList<Edge> temp = new ArrayList<Edge>(edgeList);
+
             temp.remove(e);
             Graph tempg = new Graph(g.getDirectType(), g.getVertices().size(), temp.size(), g.getVertices(), temp);
             int i_1 = graphComps(tempg).size();
