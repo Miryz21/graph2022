@@ -20,6 +20,12 @@ public class VertexAmbiguity {
             if (edge.getToV().equals(id) && !(visited.containsKey(edge.getFromV()))) {
                 adjList.add(edge.getFromV());
             }
+            if (edge.getFromV().equals(id) && !(visited.containsKey(edge.getFromV()))) {
+                adjList.add(edge.getFromV());
+            }
+            if (edge.getToV().equals(id) && !(visited.containsKey(edge.getToV()))) {
+                adjList.add(edge.getToV());
+            }
         }
         for (UUID i : adjList) {
             DFS(g, i, visited);
@@ -53,6 +59,7 @@ public class VertexAmbiguity {
         return new ArrayList<ArrayList<UUID>>(t);
     }
     public Integer blocksFind(Graph g){
+        int count;
         ArrayList<UUID> vertList = new ArrayList<UUID>();
         ArrayList<UUID> temp = new ArrayList<UUID>(vertList);
         ArrayList<UUID> cut = new ArrayList<UUID>();
@@ -82,11 +89,34 @@ public class VertexAmbiguity {
             }
 
         }
+        var edgesList = new ArrayList<Edge>(g.getEdges());
+        var temp_e = new ArrayList<Edge>(g.getEdges());
+        var tempVertex = new HashMap<UUID, Vertex>(g.getVertices());
+        for (var v : cut) {
+
+            for (var e : edgesList) {
+                if (e.getFromV().equals(v) || e.getToV().equals(v)) {
+                    temp_e.remove(e);
+                }
+            }
+            temp.remove(v);
+
+            tempVertex.remove(v);
+        }
+            Graph tempg = new Graph(g.getDirectType(), temp.size(), temp_e.size(), tempVertex, temp_e);
+            int i_1 = graphComps(tempg).size();
+            int i_2 = graphComps(g).size();
+            if (graphComps(tempg).size() > graphComps(g).size()){
+
+                res.addAll(graphComps(tempg));
+            }
+
         for (var i : res){
             Collections.sort(i);
         }
         var t = new HashSet<ArrayList<UUID>>(res);
 
         return (new ArrayList<ArrayList<UUID>>(t)).size()==0?1:(new ArrayList<ArrayList<UUID>>(t)).size();
+//        return cut.size()+1;
     }
 }
