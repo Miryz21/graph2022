@@ -9,9 +9,18 @@ import com.mathsystem.domain.plugin.plugintype.GraphProperty;
 import java.util.*;
 
 public class EdgeGraph{
+    public Integer VertexDegree(Vertex v, Graph g){
+        int i = 0;
+        for(var e: g.getEdges()){
+            if(e.getFromV().equals(v.getId()) || e.getToV().equals(v.getId())){
+                i++;
+            }
+        }
+        return i;
+    }
     public boolean isEdgeGraph(Graph g1, Graph g2) {
         //Проверяем количество рёбер в g1 и количество вершин в g2 (должны совпадать)
-        if (g1.getEdgeCount() != g2.getVertexCount()){
+        if (!Objects.equals(g1.getEdgeCount(), g2.getVertexCount())){
             return false;
         }
 
@@ -20,13 +29,13 @@ public class EdgeGraph{
 
         //список степеней вершин
         for (var i : g2.getVertices().keySet()){
-            verticesDeg.add(g2.getVertices().get(i).getWeight());
+            verticesDeg.add(VertexDegree(g2.getVertices().get(i), g2));
         }
 
         //список "степеней" рёбер (сколько у каждого ребра смежных рёбер)
         for (var i : g1.getEdges()){
             int s = 0;
-            s += g1.getVertices().get(i.getFromV()).getWeight() + g1.getVertices().get(i.getToV()).getWeight() - 2;
+            s += VertexDegree(g1.getVertices().get(i.getFromV()), g1) + VertexDegree(g1.getVertices().get(i.getToV()), g1) - 2;
             edgesDeg.add(s);
         }
 

@@ -77,7 +77,7 @@ public class VertexAmbiguity {
         return new ArrayList<ArrayList<UUID>>(t);
     }
 
-    public Integer blocksFind(Graph g) {
+    public Boolean blocksFind(Graph g) {
         int count;
         ArrayList<UUID> cut = new ArrayList<UUID>();
 
@@ -151,8 +151,35 @@ public class VertexAmbiguity {
         for (var i : vertList_1) {
             get_labels(g, i, visited, labels);
         }
+        ArrayList<String> unique_labels = new ArrayList<String>();
+        for ( var p : labels.values()){
+            if (!unique_labels.contains(p)){
+                unique_labels.add(p);
+            }
+        }
+
+        ArrayList<ArrayList<UUID>> res_1 = new ArrayList<ArrayList<UUID>>();
+        int k = 0;
+
+        for(var i : unique_labels) {
+            res_1.add(new ArrayList<UUID>());
+            for (var key : labels.keySet()) {
+                if (labels.get(key).equals(i)) {
+                    res_1.get(k).add(key);
+                }
+            }
+            k+=1;
+
+        }
+
+        for (var i : res_1) {
+            Collections.sort(i);
+        }
+        var z = new HashSet<ArrayList<UUID>>(res_1);
+
+        var result_1 = new ArrayList<ArrayList<UUID>>(z);
 
 
-        return (new ArrayList<ArrayList<UUID>>(t)).size() == 0 ? 1 : (new ArrayList<ArrayList<UUID>>(t)).size();
+        return result.equals(result_1);
     }
 }

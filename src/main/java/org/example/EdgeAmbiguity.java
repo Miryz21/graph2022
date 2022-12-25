@@ -9,6 +9,23 @@ import com.mathsystem.domain.plugin.plugintype.GraphProperty;
 import java.util.*;
 
 public class EdgeAmbiguity {
+    public void get_labels(Graph g, UUID id, HashMap<UUID, Boolean> visited, HashMap<UUID, String> labels) {
+        ArrayList<UUID> adjList = new ArrayList<UUID>();
+        visited.put(id, true);
+        labels.put(id, g.getVertices().get(id).getLabel());
+        for (Edge edge : g.getEdges()) {
+
+            if (edge.getFromV().equals(id) && !(visited.containsKey(edge.getToV()))) {
+                adjList.add(edge.getToV());
+            }
+            if (edge.getToV().equals(id) && !(visited.containsKey(edge.getFromV()))) {
+                adjList.add(edge.getFromV());
+            }
+        }
+        for (UUID i : adjList) {
+            get_labels(g, i, visited, labels);
+        }
+    }
     public void DFS(Graph g, UUID id, HashMap<UUID, Boolean> visited) {
         ArrayList<UUID> adjList = new ArrayList<UUID>();
         visited.put(id, true);
@@ -57,9 +74,10 @@ public class EdgeAmbiguity {
         ArrayList<Edge> bridges = new ArrayList<Edge>();
         ArrayList<Edge> edgeList = new ArrayList<Edge>(g.getEdges());
         ArrayList<Edge> edgeList2 = new ArrayList<Edge>(g.getEdges());
-        ArrayList<Edge> temp = new ArrayList<Edge>(edgeList);
 
         for (var e : edgeList){
+            ArrayList<Edge> temp = new ArrayList<Edge>(edgeList);
+
             temp.remove(e);
             Graph tempg = new Graph(g.getDirectType(), g.getVertices().size(), temp.size(), g.getVertices(), temp);
             if (graphComps(tempg).size() > graphComps(g).size()){
@@ -78,16 +96,45 @@ public class EdgeAmbiguity {
             Collections.sort(i);
         }
         var t = new HashSet<ArrayList<UUID>>(res);
-        var l = new ArrayList<ArrayList<UUID>>(t);
+        var result = new ArrayList<ArrayList<UUID>>(t);
 
-        String label = "0";
-        for (var i: l){
-            for (var j: i){
-                g.getVertices().get(j).setLabel(label);
+        HashMap<UUID, String> labels = new HashMap<UUID, String>();
+        HashMap<UUID, Boolean> visited = new HashMap<UUID, Boolean>();
+        ArrayList<UUID> vertList_1 = new ArrayList<UUID>(g.getVertices().keySet());
+
+        for (var i : vertList_1) {
+            get_labels(g, i, visited, labels);
+        }
+        ArrayList<String> unique_labels = new ArrayList<String>();
+        for ( var p : labels.values()){
+            if (!unique_labels.contains(p)){
+                unique_labels.add(p);
             }
-            label+=1;
         }
 
-        return res.size();
+        ArrayList<ArrayList<UUID>> res_1 = new ArrayList<ArrayList<UUID>>();
+        int k = 0;
+
+        for(var i : unique_labels) {
+            res_1.add(new ArrayList<UUID>());
+            for (var key : labels.keySet()) {
+                if (labels.get(key).equals(i)) {
+                    res_1.get(k).add(key);
+                }
+            }
+            k+=1;
+
+        }
+
+        for (var i : res_1) {
+            Collections.sort(i);
+        }
+        var z = new HashSet<ArrayList<UUID>>(res_1);
+
+        var result_1 = new ArrayList<ArrayList<UUID>>(z);
+
+
+//        return result.equals(result_1);
+        return result.size();
     }
 }
