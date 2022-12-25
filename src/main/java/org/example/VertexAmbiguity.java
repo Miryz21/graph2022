@@ -6,9 +6,13 @@ import com.mathsystem.api.graph.model.Vertex;
 import com.mathsystem.domain.graph.repository.Color;
 import com.mathsystem.domain.graph.repository.GraphType;
 import com.mathsystem.domain.plugin.plugintype.GraphProperty;
+
 import java.util.*;
 
 public class VertexAmbiguity {
+    Edge copy_edge(Edge e){
+        return e;
+    }
     public void DFS(Graph g, UUID id, HashMap<UUID, Boolean> visited) {
         ArrayList<UUID> adjList = new ArrayList<UUID>();
         visited.put(id, true);
@@ -51,29 +55,28 @@ public class VertexAmbiguity {
             res.add(compFind(visited));
 
         }
-        for (var i : res){
+        for (var i : res) {
             Collections.sort(i);
         }
         var t = new HashSet<ArrayList<UUID>>(res);
 
         return new ArrayList<ArrayList<UUID>>(t);
     }
-    public Integer blocksFind(Graph g){
+
+    public Integer blocksFind(Graph g) {
         int count;
-        ArrayList<UUID> vertList = new ArrayList<UUID>();
-        ArrayList<UUID> temp = new ArrayList<UUID>(vertList);
         ArrayList<UUID> cut = new ArrayList<UUID>();
-        ArrayList<ArrayList<UUID>> res = new ArrayList<ArrayList<UUID>>();
 
-        vertList.addAll(g.getVertices().keySet());
+        ArrayList<UUID> vertList = new ArrayList<UUID>(g.getVertices().keySet());
 
-        for (var v : vertList){
+        for (var v : vertList) {
 
+            ArrayList<UUID> temp = new ArrayList<UUID>(vertList);
 
             var edgesList = new ArrayList<Edge>(g.getEdges());
             var temp_e = new ArrayList<Edge>(g.getEdges());
-            for (var e : edgesList){
-                if (e.getFromV().equals(v) || e.getToV().equals(v)){
+            for (var e : edgesList) {
+                if (e.getFromV().equals(v) || e.getToV().equals(v)) {
                     temp_e.remove(e);
                 }
             }
@@ -83,40 +86,62 @@ public class VertexAmbiguity {
             Graph tempg = new Graph(g.getDirectType(), temp.size(), temp_e.size(), tempVertex, temp_e);
             int i_1 = graphComps(tempg).size();
             int i_2 = graphComps(g).size();
-            if (graphComps(tempg).size() > graphComps(g).size()){
+            if (graphComps(tempg).size() > graphComps(g).size()) {
                 cut.add(v);
-                res.addAll(graphComps(tempg));
             }
 
         }
-        var edgesList = new ArrayList<Edge>(g.getEdges());
-        var temp_e = new ArrayList<Edge>(g.getEdges());
+        var edgesList = new ArrayList<Edge>();
+        for(var e: g.getEdges()) {
+            var edge = new Edge(e.getFromV(), e.getToV(), Color.gray, null, null);
+
+            edgesList.add(edge);
+        }
+
+        var tempEdgeList = new ArrayList<Edge>(edgesList);
+
+
         var tempVertex = new HashMap<UUID, Vertex>(g.getVertices());
+        ArrayList<UUID> temp = new ArrayList<UUID>(vertList);
+
+
         for (var v : cut) {
 
             for (var e : edgesList) {
-                if (e.getFromV().equals(v) || e.getToV().equals(v)) {
-                    temp_e.remove(e);
+                var n_v = new Vertex(UUID.randomUUID(), Color.gray, null, null, 0, 0);
+
+
+                if (e.getFromV().equals(v)) {
+
+                    e.setFromV(n_v.getId());
+                    temp.add(n_v.getId());
+                    tempVertex.put(n_v.getId(), n_v);
+
+                } else if (e.getToV().equals(v)) {
+
+                    e.setToV(n_v.getId());
+
+                    temp.add(n_v.getId());
+                    tempVertex.put(n_v.getId(), n_v);
+
                 }
             }
             temp.remove(v);
-
             tempVertex.remove(v);
+
         }
-            Graph tempg = new Graph(g.getDirectType(), temp.size(), temp_e.size(), tempVertex, temp_e);
-            int i_1 = graphComps(tempg).size();
-            int i_2 = graphComps(g).size();
-            if (graphComps(tempg).size() > graphComps(g).size()){
+        Graph tempg = new Graph(g.getDirectType(), temp.size(), tempEdgeList.size(), tempVertex, tempEdgeList);
+        int i_1 = graphComps(tempg).size();
+        int i_2 = graphComps(g).size();
 
-                res.addAll(graphComps(tempg));
-            }
+        ArrayList<ArrayList<UUID>> res = new ArrayList<ArrayList<UUID>>(graphComps(tempg));
 
-        for (var i : res){
+
+        for (var i : res) {
             Collections.sort(i);
         }
         var t = new HashSet<ArrayList<UUID>>(res);
 
-        return (new ArrayList<ArrayList<UUID>>(t)).size()==0?1:(new ArrayList<ArrayList<UUID>>(t)).size();
-//        return cut.size()+1;
+        return (new ArrayList<ArrayList<UUID>>(t)).size() == 0 ? 1 : (new ArrayList<ArrayList<UUID>>(t)).size();
     }
 }
