@@ -47,9 +47,12 @@ public class CountBridges {
             res.add(compFind(visited));
 
         }
+        for (var i : res) {
+            Collections.sort(i);
+        }
         var t = new HashSet<ArrayList<UUID>>(res);
-
-        return new ArrayList<ArrayList<UUID>>(t);
+        var l = new ArrayList<ArrayList<UUID>>(t);
+        return l;
     }
 
     public Integer bridgeCounter(Graph g) {
