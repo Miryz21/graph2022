@@ -10,8 +10,22 @@ import com.mathsystem.domain.plugin.plugintype.GraphProperty;
 import java.util.*;
 
 public class VertexAmbiguity {
-    Edge copy_edge(Edge e){
-        return e;
+    public void get_labels(Graph g, UUID id, HashMap<UUID, Boolean> visited, HashMap<UUID, String> labels) {
+        ArrayList<UUID> adjList = new ArrayList<UUID>();
+        visited.put(id, true);
+        labels.put(id, g.getVertices().get(id).getLabel());
+        for (Edge edge : g.getEdges()) {
+
+            if (edge.getFromV().equals(id) && !(visited.containsKey(edge.getToV()))) {
+                adjList.add(edge.getToV());
+            }
+            if (edge.getToV().equals(id) && !(visited.containsKey(edge.getFromV()))) {
+                adjList.add(edge.getFromV());
+            }
+        }
+        for (UUID i : adjList) {
+            get_labels(g, i, visited, labels);
+        }
     }
     public void DFS(Graph g, UUID id, HashMap<UUID, Boolean> visited) {
         ArrayList<UUID> adjList = new ArrayList<UUID>();
@@ -106,26 +120,12 @@ public class VertexAmbiguity {
 
 
         for (var v : cut) {
-
             for (var e : edgesList) {
-                var n_v = new Vertex(UUID.randomUUID(), Color.gray, null, null, 0, 0);
-
-
-                if (e.getFromV().equals(v)) {
-
-                    e.setFromV(n_v.getId());
-                    temp.add(n_v.getId());
-                    tempVertex.put(n_v.getId(), n_v);
-
-                } else if (e.getToV().equals(v)) {
-
-                    e.setToV(n_v.getId());
-
-                    temp.add(n_v.getId());
-                    tempVertex.put(n_v.getId(), n_v);
-
+                if (e.getFromV().equals(v) || e.getToV().equals(v)) {
+                    tempEdgeList.remove(e);
                 }
             }
+
             temp.remove(v);
             tempVertex.remove(v);
 
@@ -141,6 +141,17 @@ public class VertexAmbiguity {
             Collections.sort(i);
         }
         var t = new HashSet<ArrayList<UUID>>(res);
+
+        var result = new ArrayList<ArrayList<UUID>>(t);
+
+        HashMap<UUID, String> labels = new HashMap<UUID, String>();
+        HashMap<UUID, Boolean> visited = new HashMap<UUID, Boolean>();
+        ArrayList<UUID> vertList_1 = new ArrayList<UUID>(g.getVertices().keySet());
+
+        for (var i : vertList_1) {
+            get_labels(g, i, visited, labels);
+        }
+
 
         return (new ArrayList<ArrayList<UUID>>(t)).size() == 0 ? 1 : (new ArrayList<ArrayList<UUID>>(t)).size();
     }

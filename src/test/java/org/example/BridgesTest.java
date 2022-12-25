@@ -22,5 +22,11 @@ public class BridgesTest {
         CountBridges countBridges = new CountBridges();
         assertThat(countBridges.bridgeCounter(testGraph)).isEqualTo(8);
     }
+    @Test
+    void bridges3() throws FileNotFoundException{
+        Graph testGraph = GraphFactory.loadGraphFromFile(new File("src/test/resources/18_graph3.txt"));
+        CountBridges countBridges = new CountBridges();
+        assertThat(countBridges.bridgeCounter(testGraph)).isEqualTo(3);
+    }
 
 }

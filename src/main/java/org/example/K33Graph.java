@@ -9,11 +9,21 @@ import com.mathsystem.domain.plugin.plugintype.GraphProperty;
 import java.util.*;
 
 public class K33Graph {
+    public Integer VertexDegree(Vertex v, Graph g){
+        int i = 0;
+        for(var e: g.getEdges()){
+            if(e.getFromV().equals(v.getId()) || e.getToV().equals(v.getId())){
+                i++;
+            }
+        }
+        return i;
+    }
+
     public boolean hasK33Subgraph(Graph g) {
         for (var i : g.getVertices().keySet()) {
-            if (g.getVertices().get(i).getWeight() >= 3) {
+            if (VertexDegree(g.getVertices().get(i), g) >= 3) {
                 for (var j : g.getVertices().keySet()) {
-                    if (i != j && g.getVertices().get(j).getWeight() >= 3) {
+                    if (i != j && VertexDegree(g.getVertices().get(j), g) >= 3) {
                         int count = 0;
                         var tempi = new HashSet<Edge>();
                         var tempj = new HashSet<Edge>();

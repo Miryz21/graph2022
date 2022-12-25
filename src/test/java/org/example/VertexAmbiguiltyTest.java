@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
         void VertexAmbiguility_2() throws FileNotFoundException {
             Graph testGraph = GraphFactory.loadGraphFromFile(new File("src/test/resources/16_graph2.txt"));
             VertexAmbiguity countVertex = new VertexAmbiguity();
-            assertThat(countVertex.blocksFind(testGraph)).isEqualTo(3);
+            assertThat(countVertex.blocksFind(testGraph)).isEqualTo(2);
         }
         @Test
         void VertexAmbiguility_3() throws FileNotFoundException {
@@ -58,6 +58,12 @@ import static org.assertj.core.api.Assertions.assertThat;
             Graph testGraph = GraphFactory.loadGraphFromFile(new File("src/test/resources/16_graph8.txt"));
             VertexAmbiguity countVertex = new VertexAmbiguity();
             assertThat(countVertex.blocksFind(testGraph)).isEqualTo(3);
+        }
+        @Test
+        void VertexAmbiguility_0() throws FileNotFoundException {
+            Graph testGraph = GraphFactory.loadGraphFromFile(new File("src/test/resources/16_graph_xtra.txt"));
+            VertexAmbiguity countVertex = new VertexAmbiguity();
+            assertThat(countVertex.blocksFind(testGraph)).isEqualTo(4);
         }
     }
 

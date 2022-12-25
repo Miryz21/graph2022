@@ -45,18 +45,18 @@ public class EdgeAmbiguity {
             res.add(compFind(visited));
 
         }
-        for (var i : res){
+        for (var i : res) {
             Collections.sort(i);
         }
         var t = new HashSet<ArrayList<UUID>>(res);
-
-        return new ArrayList<ArrayList<UUID>>(t);
+        var l = new ArrayList<ArrayList<UUID>>(t);
+        return l;
     }
 
-    public ArrayList<ArrayList<UUID>> edgeCompFind(Graph g){
-        ArrayList<ArrayList<UUID>> res = new ArrayList<ArrayList<UUID>>();
+    public Integer edgeCompFind(Graph g){
         ArrayList<Edge> bridges = new ArrayList<Edge>();
         ArrayList<Edge> edgeList = new ArrayList<Edge>(g.getEdges());
+        ArrayList<Edge> edgeList2 = new ArrayList<Edge>(g.getEdges());
         ArrayList<Edge> temp = new ArrayList<Edge>(edgeList);
 
         for (var e : edgeList){
@@ -64,10 +64,30 @@ public class EdgeAmbiguity {
             Graph tempg = new Graph(g.getDirectType(), g.getVertices().size(), temp.size(), g.getVertices(), temp);
             if (graphComps(tempg).size() > graphComps(g).size()){
                 bridges.add(e);
-                res.addAll(graphComps(tempg));
             }
         }
+        for(var e: bridges){
+                edgeList2.remove(e);
+            }
 
-        return res;
+        Graph tempg = new Graph(g.getDirectType(), g.getVertices().size(), edgeList2.size(), g.getVertices(), edgeList2);
+
+        ArrayList<ArrayList<UUID>> res = new ArrayList<ArrayList<UUID>>(graphComps(tempg));
+
+        for (var i : res) {
+            Collections.sort(i);
+        }
+        var t = new HashSet<ArrayList<UUID>>(res);
+        var l = new ArrayList<ArrayList<UUID>>(t);
+
+        String label = "0";
+        for (var i: l){
+            for (var j: i){
+                g.getVertices().get(j).setLabel(label);
+            }
+            label+=1;
+        }
+
+        return res.size();
     }
 }
