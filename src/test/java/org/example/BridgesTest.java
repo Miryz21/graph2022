@@ -12,8 +12,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class BridgesTest {
     @Test
     void count_bridges() throws FileNotFoundException{
-        Graph testGraph = GraphFactory.loadGraphFromFile(new File("src/test/resources/bridges1.txt"));
+        Graph testGraph = GraphFactory.loadGraphFromFile(new File("src/test/resources/bridges2.txt"));
         CountBridges countBridges = new CountBridges();
-        assertThat(countBridges.bridgeCounter(testGraph)).isEqualTo(1);
+        assertThat(countBridges.bridgeCounter(testGraph)).isEqualTo(8);
     }
 }
